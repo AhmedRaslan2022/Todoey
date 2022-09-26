@@ -10,7 +10,6 @@ import Foundation
 
 struct Constants{
     
-// MARK: -  CellName
  static  let toDoCellName = "ToDoItemCell"
     
 }
