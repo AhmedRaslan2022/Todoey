@@ -10,13 +10,19 @@ import UIKit
 import CoreData
 
 class TodoListViewController: UITableViewController {
-
+    
+  
     var itemArray = [Item]()
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
  
+    @IBOutlet weak var itemsSearchBar: UISearchBar!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+       
+       
+        itemsSearchBar.delegate = self
         print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         loadItems()
     }
@@ -74,19 +80,40 @@ extension TodoListViewController{
         }
 }
 
+//MARK: -  UISearchBarDelegate  Methods
+extension TodoListViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        request.predicate =  NSPredicate(format: "title CONTAINS[cd] %@", itemsSearchBar.text!)
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        loadItems(with: request)
+        
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if itemsSearchBar.text?.count == 0 {
+            loadItems()
+            DispatchQueue.main.async {
+                self.itemsSearchBar.resignFirstResponder()
+            }
+           
+        }
+    }
+}
 
 //MARK: -   CoreData Methods
 
 extension TodoListViewController {
     
-    func loadItems(){
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()){
         
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
         do {
        itemArray = try context.fetch(request)
           }
         catch {
-            print("Error in loading items \(error)")
+            print("Error in fetching items \(error)")
         }
         self.tableView.reloadData()
     }
