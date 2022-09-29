@@ -9,7 +9,10 @@
 import Foundation
 
 struct Constants{
+    //MARK: - Cells identifires
+ static  let itemCell = "ToDoItemCell"
+ static  let categoryCell = "CategoryCell"
     
- static  let toDoCellName = "ToDoItemCell"
-    
+    //MARK: - Segues identifires
+static  let categoryToItems = "goToItems"
 }
